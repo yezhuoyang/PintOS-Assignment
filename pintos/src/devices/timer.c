@@ -33,7 +33,7 @@ static void real_time_delay (int64_t num, int32_t denom);
 /* Sets up the timer to interrupt TIMER_FREQ times per second,
    and registers the corresponding interrupt. */
 void
-timer_init (void) 
+timer_init (void)
 {
   pit_configure_channel (0, 2, TIMER_FREQ);
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
@@ -71,10 +71,11 @@ int64_t
 timer_ticks (void) 
 {
   enum intr_level old_level = intr_disable ();
-  int64_t t = ticks;
+  int64_t t=ticks;
   intr_set_level (old_level);
   return t;
 }
+
 
 /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
@@ -84,15 +85,15 @@ timer_elapsed (int64_t then)
   return timer_ticks () - then;
 }
 
+
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
 void
 timer_sleep (int64_t ticks) 
 {
   int64_t start = timer_ticks ();
-
   ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks) 
+  while(timer_elapsed (start) < ticks)
     thread_yield ();
 }
 
@@ -143,7 +144,7 @@ timer_mdelay (int64_t ms)
 void
 timer_udelay (int64_t us) 
 {
-  real_time_delay (us, 1000 * 1000);
+    real_time_delay (us, 1000 * 1000);
 }
 
 /* Sleeps execution for approximately NS nanoseconds.  Interrupts
@@ -218,7 +219,6 @@ real_time_sleep (int64_t num, int32_t denom)
      1 s / TIMER_FREQ ticks
   */
   int64_t ticks = num * TIMER_FREQ / denom;
-
   ASSERT (intr_get_level () == INTR_ON);
   if (ticks > 0)
     {
@@ -241,6 +241,6 @@ real_time_delay (int64_t num, int32_t denom)
 {
   /* Scale the numerator and denominator down by 1000 to avoid
      the possibility of overflow. */
-  ASSERT (denom % 1000 == 0);
-  busy_wait (loops_per_tick * num / 1000 * TIMER_FREQ / (denom / 1000)); 
+  ASSERT(denom % 1000 == 0);
+  busy_wait(loops_per_tick * num / 1000 * TIMER_FREQ / (denom / 1000));
 }

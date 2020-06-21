@@ -71,8 +71,7 @@ static struct block *arena_to_block (struct arena *, size_t idx);
 void
 malloc_init (void) 
 {
-  size_t block_size;
-
+    size_t block_size;
   for (block_size = 16; block_size < PGSIZE / 2; block_size *= 2)
     {
       struct desc *d = &descs[desc_cnt++];
@@ -167,8 +166,8 @@ calloc (size_t a, size_t b)
     return NULL;
 
   /* Allocate and zero memory. */
-  p = malloc (size);
-  if (p != NULL)
+  p=malloc(size);
+  if(p!= NULL)
     memset (p, 0, size);
 
   return p;
@@ -181,7 +180,6 @@ block_size (void *block)
   struct block *b = block;
   struct arena *a = block_to_arena (b);
   struct desc *d = a->desc;
-
   return d != NULL ? d->block_size : PGSIZE * a->free_cnt - pg_ofs (block);
 }
 
@@ -194,7 +192,7 @@ block_size (void *block)
 void *
 realloc (void *old_block, size_t new_size) 
 {
-  if (new_size == 0) 
+  if(new_size == 0)
     {
       free (old_block);
       return NULL;
@@ -223,35 +221,30 @@ free (void *p)
       struct block *b = p;
       struct arena *a = block_to_arena (b);
       struct desc *d = a->desc;
-      
+
       if (d != NULL) 
         {
           /* It's a normal block.  We handle it here. */
-
 #ifndef NDEBUG
           /* Clear the block to help detect use-after-free bugs. */
           memset (b, 0xcc, d->block_size);
 #endif
-  
           lock_acquire (&d->lock);
-
           /* Add block to free list. */
           list_push_front (&d->free_list, &b->free_elem);
 
           /* If the arena is now entirely unused, free it. */
-          if (++a->free_cnt >= d->blocks_per_arena) 
+          if(++a->free_cnt >= d->blocks_per_arena)
             {
               size_t i;
-
-              ASSERT (a->free_cnt == d->blocks_per_arena);
-              for (i = 0; i < d->blocks_per_arena; i++) 
+              ASSERT(a->free_cnt == d->blocks_per_arena);
+              for (i = 0; i < d->blocks_per_arena; i++)
                 {
                   struct block *b = arena_to_block (a, i);
                   list_remove (&b->free_elem);
                 }
               palloc_free_page (a);
             }
-
           lock_release (&d->lock);
         }
       else
@@ -277,7 +270,6 @@ block_to_arena (struct block *b)
   ASSERT (a->desc == NULL
           || (pg_ofs (b) - sizeof *a) % a->desc->block_size == 0);
   ASSERT (a->desc != NULL || pg_ofs (b) == sizeof *a);
-
   return a;
 }
 

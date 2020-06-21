@@ -8,7 +8,6 @@
 #include "threads/loader.h"
 
 /* Functions and macros for working with virtual addresses.
-
    See pte.h for functions and macros specifically for x86
    hardware page tables. */
 
@@ -20,9 +19,10 @@
 #define PGSIZE  (1 << PGBITS)              /* Bytes in a page. */
 #define PGMASK  BITMASK(PGSHIFT, PGBITS)   /* Page offset bits (0:12). */
 
+
 /* Offset within a page. */
 static inline unsigned pg_ofs (const void *va) {
-  return (uintptr_t) va & PGMASK;
+    return (uintptr_t) va & PGMASK;
 }
 
 /* Virtual page number. */
@@ -36,7 +36,7 @@ static inline void *pg_round_up (const void *va) {
 }
 
 /* Round down to nearest page boundary. */
-static inline void *pg_round_down (const void *va) {
+static inline void *pg_round_down (const void *va){
   return (void *) ((uintptr_t) va & ~PGMASK);
 }
 
@@ -72,7 +72,6 @@ static inline void *
 ptov (uintptr_t paddr)
 {
   ASSERT ((void *) paddr < PHYS_BASE);
-
   return (void *) (paddr + PHYS_BASE);
 }
 
@@ -82,7 +81,6 @@ static inline uintptr_t
 vtop (const void *vaddr)
 {
   ASSERT (is_kernel_vaddr (vaddr));
-
   return (uintptr_t) vaddr - (uintptr_t) PHYS_BASE;
 }
 

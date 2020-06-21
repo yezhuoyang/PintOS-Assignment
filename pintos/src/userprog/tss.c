@@ -18,7 +18,7 @@
    a TSS: stack switching for interrupts that occur in user mode.
    When an interrupt occurs in user mode (ring 3), the processor
    consults the ss0 and esp0 members of the current TSS to
-   determine the stack to use for handling the interrupt.  Thus,
+   determine the stack to use for handling the interrupt. Thus,
    we must create a TSS and initialize at least these fields, and
    this is precisely what this file does.
 
@@ -77,12 +77,12 @@ static struct tss *tss;
 
 /* Initializes the kernel TSS. */
 void
-tss_init (void) 
+tss_init (void)
 {
   /* Our TSS is never used in a call gate or task gate, so only a
      few fields of it are ever referenced, and those are the only
      ones we initialize. */
-  tss = palloc_get_page (PAL_ASSERT | PAL_ZERO);
+  tss = palloc_get_page(PAL_ASSERT|PAL_ZERO);
   tss->ss0 = SEL_KDSEG;
   tss->bitmap = 0xdfff;
   tss_update ();
@@ -90,10 +90,10 @@ tss_init (void)
 
 /* Returns the kernel TSS. */
 struct tss *
-tss_get (void) 
+tss_get (void)
 {
-  ASSERT (tss != NULL);
-  return tss;
+    ASSERT (tss != NULL);
+    return tss;
 }
 
 /* Sets the ring 0 stack pointer in the TSS to point to the end
@@ -101,6 +101,6 @@ tss_get (void)
 void
 tss_update (void) 
 {
-  ASSERT (tss != NULL);
+  ASSERT(tss != NULL);
   tss->esp0 = (uint8_t *) thread_current () + PGSIZE;
 }

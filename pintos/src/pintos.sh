@@ -2,6 +2,13 @@
 subdir=`pwd|sed 's/.*\/\(.*\)\/build$/\1/g'`
 testcase=$2
 
+SWD=/Users/yezhuoyang/toolchain
+PREFIX=$SWD/x86_64
+export PATH=$PREFIX/bin:$PATH
+export DYLD_LIBRARY_PATH=$PREFIX/lib:$DYLD_LIBRARY_PATH
+
+
+
 command -v pintos >/dev/null 2>&1 || {
     echo "Error: pintos not found, check your PATH"
     exit 1

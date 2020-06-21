@@ -55,7 +55,7 @@ static const char *swap_bdev_name;
 #endif /* FILESYS */
 
 /* -ul: Maximum number of pages to put into palloc's user pool. */
-static size_t user_page_limit = SIZE_MAX;
+static size_t user_page_limit=SIZE_MAX;
 
 static void bss_init (void);
 static void paging_init (void);
@@ -87,8 +87,8 @@ pintos_init (void)
 
   /* Initialize ourselves as a thread so we can use locks,
      then enable console locking. */
-  thread_init ();
-  console_init ();  
+  thread_init();
+  console_init();
 
   /* Greet user. */
   printf ("Pintos booting with %'"PRIu32" kB RAM...\n",
@@ -128,7 +128,7 @@ pintos_init (void)
 #endif
 
   printf ("Boot complete.\n");
-  
+
   if (*argv != NULL) {
     /* Run actions specified on kernel command line. */
     run_actions (argv);
@@ -167,20 +167,20 @@ paging_init (void)
 
   pd = init_page_dir = palloc_get_page (PAL_ASSERT | PAL_ZERO);
   pt = NULL;
+
   for (page = 0; page < init_ram_pages; page++)
     {
       uintptr_t paddr = page * PGSIZE;
       char *vaddr = ptov (paddr);
       size_t pde_idx = pd_no (vaddr);
       size_t pte_idx = pt_no (vaddr);
-      bool in_kernel_text = &_start <= vaddr && vaddr < &_end_kernel_text;
+      bool in_kernel_text=&_start <= vaddr && vaddr < &_end_kernel_text;
 
-      if (pd[pde_idx] == 0)
+      if(pd[pde_idx] == 0)
         {
           pt = palloc_get_page (PAL_ASSERT | PAL_ZERO);
           pd[pde_idx] = pde_create (pt);
         }
-
       pt[pte_idx] = pte_create_kernel (vaddr, !in_kernel_text);
     }
 
@@ -195,13 +195,12 @@ paging_init (void)
 /* Breaks the kernel command line into words and returns them as
    an argv-like array. */
 static char **
-read_command_line (void) 
+read_command_line (void)
 {
   static char *argv[LOADER_ARGS_LEN / 2 + 1];
   char *p, *end;
   int argc;
   int i;
-
   argc = *(uint32_t *) ptov (LOADER_ARG_CNT);
   p = ptov (LOADER_ARGS);
   end = p + LOADER_ARGS_LEN;
@@ -216,9 +215,9 @@ read_command_line (void)
   argv[argc] = NULL;
 
   /* Print kernel command line. */
-  printf ("Kernel command line:");
+  printf("Kernel command line:");
   for (i = 0; i < argc; i++)
-    if (strchr (argv[i], ' ') == NULL)
+    if(strchr (argv[i], ' ') == NULL)
       printf (" %s", argv[i]);
     else
       printf (" '%s'", argv[i]);
@@ -230,14 +229,14 @@ read_command_line (void)
 /* Parses options in ARGV[]
    and returns the first non-option argument. */
 static char **
-parse_options (char **argv) 
+parse_options (char **argv)
 {
   for (; *argv != NULL && **argv == '-'; argv++)
     {
       char *save_ptr;
       char *name = strtok_r (*argv, "=", &save_ptr);
       char *value = strtok_r (NULL, "", &save_ptr);
-      
+
       if (!strcmp (name, "-h"))
         usage ();
       else if (!strcmp (name, "-q"))
@@ -277,7 +276,6 @@ parse_options (char **argv)
      for reproducibility.  To fix this, give the "-r" option to
      the pintos script to request real-time execution. */
   random_init (rtc_get_time ());
-  
   return argv;
 }
 
@@ -344,7 +342,6 @@ run_actions (char **argv)
       a->function (argv);
       argv += a->argc;
     }
-  
 }
 
 /* Prints a kernel command line help message and powers off the
