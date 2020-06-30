@@ -36,7 +36,6 @@ random_init (unsigned seed)
   uint8_t *seedp = (uint8_t *) &seed;
   int i;
   uint8_t j;
-
   for (i = 0; i < 256; i++) 
     s[i] = i;
   for (i = j = 0; i < 256; i++) 
@@ -44,7 +43,6 @@ random_init (unsigned seed)
       j += s[i] + seedp[i % sizeof seed];
       swap_byte (s + i, s + j);
     }
-
   s_i = s_j = 0;
   inited = true;
 }

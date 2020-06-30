@@ -1,8 +1,13 @@
 #ifndef THREADS_THREAD_H
 #define THREADS_THREAD_H
+
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include <hash.h>
+#include "threads/synch.h"
+#include "filesys/file.h"
+
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -15,6 +20,7 @@ enum thread_status
 
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
+typedef int pid_t;
 typedef int tid_t;
 #define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
 
@@ -80,6 +86,19 @@ typedef int tid_t;
    only because they are mutually exclusive: only a thread in the
    ready state is on the run queue, whereas only a thread in the
    blocked state is on a semaphore wait list. */
+
+
+
+struct file_descriptor
+{
+    int fd;
+    char name[16];
+    struct file *file_pointer;
+    struct list_elem elem;
+};
+
+
+
 struct thread
   {
     /* Owned by thread.c. */
@@ -88,7 +107,6 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
-    int nice;                           /* nice value of thread*/
     struct list_elem allelem;           /* List element for all threads list. */
 
     /* Shared between thread.c and synch.c. */
@@ -97,9 +115,40 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+    struct hash spt;
+
+    uint32_t exit_status;
+
+    struct semaphore exit_sem;
+    bool to_exit;
+    struct semaphore be_waited;
+
+    struct list child_list;
+    struct list_elem child_elem;
+
+    struct list file_descriptors;
+    unsigned fd_index;
+
+    struct file * prog_file;
 #endif
-    /* Owned by thread.c. */
-    unsigned magic;                     /* Detects stack overflow. */
+
+    unsigned magic;
+
+    int64_t wake_up_ticks;
+    struct list_elem sleepelem;
+    struct semaphore sleep_semaphore;
+
+    int original_priority;
+    struct list locks;
+    struct lock *waiting_lock;
+
+
+    int nice;
+    int recent_cpu;
+
+    int mapid;
+    struct list mmap_list;
+
   };
 
 /* If false (default), use round-robin scheduler.
@@ -132,10 +181,23 @@ void thread_foreach (thread_action_func *, void *);
 
 int thread_get_priority (void);
 void thread_set_priority (int);
+void thread_donate_priority(struct thread *);
+void thread_update_priority(struct thread *);
+
+void thread_update_recent_cpu_per_tick(void);
+void thread_recalculate_priority(struct thread *);
+void thread_recalculate_load_avg_and_recent_cpu(void);
+
 
 int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+
+bool less_sleeping_threads (const struct list_elem *, const struct list_elem *, void * aux UNUSED);
+bool less_priority_threads (const struct list_elem *, const struct list_elem *, void * aux UNUSED);
+bool great_priority_threads (const struct list_elem *, const struct list_elem *, void * aux UNUSED);
+
 
 #endif /* threads/thread.h */
