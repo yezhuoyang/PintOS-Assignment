@@ -8,13 +8,13 @@
 /* Bitmap abstract data type. */
 
 /* Creation and destruction. */
-struct bitmap *bitmap_create (size_t bit_cnt);
+struct bitmap *bitmap_create(size_t bit_cnt);
 struct bitmap *bitmap_create_in_buf (size_t bit_cnt, void *, size_t byte_cnt);
 size_t bitmap_buf_size (size_t bit_cnt);
 void bitmap_destroy (struct bitmap *);
 
 /* Bitmap size. */
-size_t bitmap_size (const struct bitmap *);
+size_t bitmap_size(const struct bitmap *);
 
 /* Setting and testing single bits. */
 void bitmap_set (struct bitmap *, size_t idx, bool);

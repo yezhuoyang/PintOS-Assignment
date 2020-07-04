@@ -288,16 +288,15 @@ thread_tid (void)
   return thread_current ()->tid;
 }
 
-/* Deschedules the current thread and destroys it.  Never
+/* Destroy the current thread and destroys it.  Never
    returns to the caller. */
 void
 thread_exit (void) 
 {
-  ASSERT (!intr_context ());
+    ASSERT (!intr_context ());
 
 #ifdef USERPROG
   process_exit ();
-
 
   if(thread_current()->prog_file)
   {
@@ -305,8 +304,8 @@ thread_exit (void)
       thread_current()->prog_file=NULL;
   }
 
-
   struct list_elem *e;
+
   for(e=list_begin(&thread_current()->locks);
       e != list_end(&thread_current()->locks);
       e=list_next(e))
@@ -320,8 +319,8 @@ thread_exit (void)
       e!=list_end(&thread_current()->child_list);
       e=list_next(e))
   {
-      struct thread *c=list_entry(e,struct thread,child_elem);
-      sema_up(&c->exit_sem);
+      struct thread *child=list_entry(e,struct thread,child_elem);
+      sema_up(&child->exit_sem);
   }
   lock_release(&exit_lock);
 
@@ -383,6 +382,7 @@ void thread_foreach (thread_action_func *func, void *aux)
 
 }
 
+
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
@@ -412,6 +412,7 @@ thread_update_priority(struct thread *t)
     enum intr_level old_level=intr_disable();
 
     t->priority=PRI_MIN;
+
     if(!list_empty(&t->locks))
     {
         list_sort(&t->locks,great_priority_lock,NULL);
@@ -421,6 +422,7 @@ thread_update_priority(struct thread *t)
     {
         t->priority=t->original_priority;
     }
+
 
     intr_set_level(old_level);
 }
@@ -468,9 +470,9 @@ thread_recalculate_load_avg_and_recent_cpu ()
     /* load average */
     size_t ready_threads = list_size (&ready_list);
     if (cur != idle_thread)
-        ready_threads = ready_threads + 1;
-    int FF_ready_threads = CONVERT_FF (ready_threads);
-    int FF_59_60 = DIV_FI (CONVERT_FF (59), 60);
+        ready_threads=ready_threads + 1;
+    int FF_ready_threads=CONVERT_FF (ready_threads);
+    int FF_59_60 = DIV_FI(CONVERT_FF (59), 60);
     int FF_1_60 = DIV_FI (CONVERT_FF (1), 60);
     load_average = ADD_FF (MUL_FF (FF_59_60, load_average), MUL_FF (FF_1_60, FF_ready_threads));
     /* rencent cpu */
@@ -495,7 +497,7 @@ void
 thread_set_nice (int nice)
 {
     thread_current ()->nice = nice;
-    thread_recalculate_priority (thread_current ());
+    thread_recalculate_priority(thread_current ());
     thread_yield ();
 }
 
@@ -558,7 +560,6 @@ static void
 kernel_thread(thread_func *function, void *aux)
 {
   ASSERT(function != NULL);
-
   intr_enable ();       /* The scheduler runs with interrupts off. */
   function (aux);       /* Execute the thread function. */
   thread_exit ();       /* If function() returns, kill the thread. */
@@ -600,7 +601,7 @@ init_thread(struct thread *t, const char *name, int priority)
   strlcpy(t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
-  t->magic = THREAD_MAGIC;
+  t->magic=THREAD_MAGIC;
 
   t->original_priority=priority;
   list_init(&t->locks);
@@ -624,10 +625,9 @@ init_thread(struct thread *t, const char *name, int priority)
 
 #ifdef USERPROG
 sema_init(&t->exit_sem,0);
-
 sema_init(&t->be_waited,0);
-
 list_init(&t->child_list);
+
 if(t!=initial_thread)
     list_push_back(&thread_current()->child_list,&t->child_elem);
 
@@ -641,7 +641,7 @@ t->prog_file=NULL;
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
    returns a pointer to the frame's base. */
 static void *
-alloc_frame (struct thread *t, size_t size) 
+alloc_frame(struct thread *t, size_t size)
 {
     /* Stack data is always allocated in word-size units. */
     ASSERT(is_thread (t));
@@ -659,11 +659,11 @@ alloc_frame (struct thread *t, size_t size)
 static struct thread *
 next_thread_to_run (void) 
 {
-  if (list_empty (&ready_list))
+  if (list_empty(&ready_list))
     return idle_thread;
   else{
       list_sort(&ready_list,great_priority_threads,NULL);
-      return list_entry (list_pop_front (&ready_list), struct thread, elem);
+      return list_entry(list_pop_front (&ready_list), struct thread, elem);
   }
 }
 

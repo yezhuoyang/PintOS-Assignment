@@ -43,7 +43,7 @@ gdt_init (void)
   gdt[SEL_KDSEG/sizeof *gdt]=make_data_desc (0);
   gdt[SEL_UCSEG/sizeof *gdt]=make_code_desc (3);
   gdt[SEL_UDSEG/sizeof *gdt]=make_data_desc (3);
-  gdt[SEL_TSS/sizeof *gdt]=make_tss_desc (tss_get ());
+  gdt[SEL_TSS/sizeof *gdt]=make_tss_desc(tss_get ());
 
   /* Load GDTR, TR.  See [IA32-v3a] 2.4.1 "Global Descriptor
      Table Register (GDTR)", 2.4.4 "Task Register (TR)", and
@@ -58,7 +58,7 @@ enum seg_class
         {
     CLS_SYSTEM = 0,             /* System segment. */
     CLS_CODE_DATA = 1           /* Code or data segment. */
-  };
+        };
 
 /* Limit has byte or 4 kB page granularity? */
 enum seg_granularity
@@ -87,6 +87,7 @@ make_seg_desc(uint32_t base,
                enum seg_granularity granularity)
 {
   uint32_t e0, e1;
+
   ASSERT(limit <= 0xfffff);
   ASSERT(class==CLS_SYSTEM || class==CLS_CODE_DATA);
   ASSERT(type >= 0 && type <= 15);

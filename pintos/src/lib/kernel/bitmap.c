@@ -76,10 +76,10 @@ last_mask (const struct bitmap *b)
    The caller is responsible for freeing the bitmap, with bitmap_destroy(),
    when it is no longer needed. */
 struct bitmap *
-bitmap_create (size_t bit_cnt) 
+bitmap_create(size_t bit_cnt)
 {
-  struct bitmap *b = malloc (sizeof *b);
-  if (b != NULL)
+  struct bitmap *b=malloc(sizeof *b);
+  if(b != NULL)
     {
       b->bit_cnt = bit_cnt;
       b->bits = malloc (byte_cnt (bit_cnt));
@@ -97,12 +97,10 @@ bitmap_create (size_t bit_cnt)
    BLOCK_SIZE bytes of storage preallocated at BLOCK.
    BLOCK_SIZE must be at least bitmap_needed_bytes(BIT_CNT). */
 struct bitmap *
-bitmap_create_in_buf (size_t bit_cnt, void *block, size_t block_size UNUSED)
+bitmap_create_in_buf(size_t bit_cnt, void *block, size_t block_size UNUSED)
 {
   struct bitmap *b = block;
-  
-  ASSERT (block_size >= bitmap_buf_size (bit_cnt));
-
+  ASSERT(block_size>=bitmap_buf_size(bit_cnt));
   b->bit_cnt = bit_cnt;
   b->bits = (elem_type *) (b + 1);
   bitmap_set_all (b, false);
@@ -332,7 +330,7 @@ bitmap_scan_and_flip (struct bitmap *b, size_t start, size_t cnt, bool value)
 size_t
 bitmap_file_size (const struct bitmap *b) 
 {
-  return byte_cnt (b->bit_cnt);
+  return byte_cnt(b->bit_cnt);
 }
 
 /* Reads B from FILE.  Returns true if successful, false
@@ -344,7 +342,7 @@ bitmap_read (struct bitmap *b, struct file *file)
   if (b->bit_cnt > 0) 
     {
       off_t size = byte_cnt (b->bit_cnt);
-      success = file_read_at (file, b->bits, size, 0) == size;
+      success=file_read_at(file, b->bits, size, 0) == size;
       b->bits[elem_cnt (b->bit_cnt) - 1] &= last_mask (b);
     }
   return success;
@@ -355,7 +353,7 @@ bitmap_read (struct bitmap *b, struct file *file)
 bool
 bitmap_write (const struct bitmap *b, struct file *file)
 {
-  off_t size = byte_cnt (b->bit_cnt);
+  off_t size = byte_cnt(b->bit_cnt);
   return file_write_at (file, b->bits, size, 0) == size;
 }
 #endif /* FILESYS */

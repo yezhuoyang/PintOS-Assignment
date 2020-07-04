@@ -8,7 +8,6 @@ export PATH=$PREFIX/bin:$PATH
 export DYLD_LIBRARY_PATH=$PREFIX/lib:$DYLD_LIBRARY_PATH
 
 
-
 command -v pintos >/dev/null 2>&1 || {
     echo "Error: pintos not found, check your PATH"
     exit 1

@@ -7,17 +7,17 @@
 #include "threads/palloc.h"
 
 static uint32_t *active_pd (void);
-static void invalidate_pagedir (uint32_t *);
+static void invalidate_pagedir(uint32_t *);
 
 /* Creates a new page directory that has mappings for kernel
    virtual addresses, but none for user virtual addresses.
    Returns the new page directory, or a null pointer if memory
    allocation fails. */
-uint32_t* pagedir_create (void)
+uint32_t* pagedir_create(void)
 {
     uint32_t *pd = palloc_get_page(0);
     if(pd != NULL)
-        memcpy(pd, init_page_dir, PGSIZE);
+        memcpy(pd,init_page_dir,PGSIZE);
     return pd;
 }
 
@@ -31,12 +31,12 @@ pagedir_destroy (uint32_t *pd)
     return;
   ASSERT(pd!=init_page_dir);
   for(pde=pd;pde<pd+pd_no(PHYS_BASE);pde++)
-    if (*pde & PTE_P)
+    if(*pde & PTE_P)
       {
         uint32_t *pt=pde_get_pt(*pde);
         uint32_t *pte;
         for(pte = pt; pte < pt + PGSIZE / sizeof *pte; pte++)
-          if (*pte & PTE_P)
+          if(*pte & PTE_P)
             palloc_free_page(pte_get_page (*pte));
           palloc_free_page(pt);
       }
@@ -53,14 +53,14 @@ static uint32_t *
 lookup_page(uint32_t *pd, const void *vaddr, bool create)
 {
     uint32_t *pt, *pde;
-  ASSERT(pd!=NULL);
+    ASSERT(pd!=NULL);
 
-  /* Shouldn't create new kernel virtual mappings. */
-  ASSERT(!create||is_user_vaddr(vaddr));
+    /* Shouldn't create new kernel virtual mappings. */
+    ASSERT(!create||is_user_vaddr(vaddr));
 
-  /* Check for a page table for VADDR.
-     If one is missing, create one if requested. */
-  pde=pd+pd_no(vaddr);
+    /* Check for a page table for VADDR.
+    If one is missing, create one if requested. */
+    pde=pd+pd_no(vaddr);
 
   if(*pde==0)
     {
@@ -93,12 +93,15 @@ bool
 pagedir_set_page(uint32_t *pd, void *upage, void *kpage, bool writable)
 {
     uint32_t *pte;
+
     ASSERT(pg_ofs(upage)== 0);
     ASSERT(pg_ofs(kpage)== 0);
     ASSERT(is_user_vaddr(upage));
     ASSERT(vtop(kpage)>>PTSHIFT<init_ram_pages);
     ASSERT(pd!=init_page_dir);
+
     pte=lookup_page(pd,upage,true);
+
     if(pte != NULL)
     {
       ASSERT((*pte&PTE_P)==0);
@@ -133,9 +136,12 @@ void
 pagedir_clear_page (uint32_t *pd, void *upage) 
 {
   uint32_t *pte;
+
   ASSERT(pg_ofs(upage)==0);
   ASSERT(is_user_vaddr(upage));
+
   pte=lookup_page(pd,upage,false);
+
   if(pte!=NULL &&(*pte&PTE_P)!=0)
     {
       *pte &= ~PTE_P;

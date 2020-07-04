@@ -24,7 +24,7 @@
 #include "threads/thread.h"
 #include "threads/input.h"
 #ifdef VM
-#include "vm/spt.h"
+#include "vm/page.h"
 #include "vm/swap.h"
 #include "vm/frame.h"
 #endif

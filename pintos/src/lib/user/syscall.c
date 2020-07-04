@@ -64,7 +64,7 @@
 void
 halt (void) 
 {
-  syscall0 (SYS_HALT);
+  syscall0(SYS_HALT);
   NOT_REACHED ();
 }
 
@@ -174,11 +174,11 @@ readdir (int fd, char name[READDIR_MAX_LEN + 1])
 bool
 isdir (int fd) 
 {
-  return syscall1 (SYS_ISDIR, fd);
+  return syscall1(SYS_ISDIR, fd);
 }
 
 int
 inumber (int fd) 
 {
-  return syscall1 (SYS_INUMBER, fd);
+  return syscall1(SYS_INUMBER, fd);
 }

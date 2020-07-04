@@ -19,7 +19,7 @@ static char buf1[BUF_SIZE];
 static char buf2[BUF_SIZE];
 
 int
-main (int argc, const char *argv[]) 
+main(int argc, const char *argv[])
 {
   int child_idx;
   int fd;
@@ -27,13 +27,13 @@ main (int argc, const char *argv[])
 
   quiet = true;
   
-  CHECK (argc == 2, "argc must be 2, actually %d", argc);
+  CHECK(argc == 2, "argc must be 2, actually %d", argc);
   child_idx = atoi (argv[1]);
 
   random_init (0);
   random_bytes (buf1, sizeof buf1);
 
-  CHECK ((fd = open (file_name)) > 1, "open \"%s\"", file_name);
+  CHECK((fd = open (file_name)) > 1, "open \"%s\"", file_name);
   ofs = 0;
   while (ofs < sizeof buf2)
     {

@@ -85,7 +85,7 @@ timer_ticks (void)
 /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
 int64_t
-timer_elapsed (int64_t then)
+timer_elapsed(int64_t then)
 {
     return timer_ticks () - then;
 }
@@ -101,10 +101,11 @@ timer_sleep (int64_t ticks)
 
     struct thread *cur = thread_current ();
     cur->wake_up_ticks = start + ticks;
-    sema_init (&cur->sleep_semaphore, 0);
+
+    sema_init(&cur->sleep_semaphore, 0);
 
     enum intr_level old_level = intr_disable ();
-    list_insert_ordered (&sleeping_threads, &cur->sleepelem, less_sleeping_threads, NULL);
+    list_insert_ordered(&sleeping_threads, &cur->sleepelem, less_sleeping_threads, NULL);
     intr_set_level(old_level);
 
     sema_down (&cur->sleep_semaphore);
@@ -201,13 +202,13 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
     /* wake up sleeping threads,
        sleep is not allowed during interruption */
-    for (; !list_empty (&sleeping_threads); )
+    for(; !list_empty (&sleeping_threads);)
     {
-        struct thread *front = list_entry (list_front (&sleeping_threads), struct thread, sleepelem);
-        if (front->wake_up_ticks <= ticks)
+        struct thread *front=list_entry(list_front(&sleeping_threads),struct thread,sleepelem)
+        if(front->wake_up_ticks <= ticks)
         {
-            sema_up (&front->sleep_semaphore);
-            list_pop_front (&sleeping_threads);
+            sema_up(&front->sleep_semaphore);
+            list_pop_front(&sleeping_threads);
         }
         else
             break;
