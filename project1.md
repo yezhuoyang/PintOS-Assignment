@@ -1,6 +1,5 @@
 # Project 1 Design Document
 
-> SJTU MS110  
 > Spring 2020
 
 ## GROUP
