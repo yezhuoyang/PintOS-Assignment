@@ -204,7 +204,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
        sleep is not allowed during interruption */
     for(; !list_empty (&sleeping_threads);)
     {
-        struct thread *front=list_entry(list_front(&sleeping_threads),struct thread,sleepelem)
+        struct thread *front=list_entry(list_front(&sleeping_threads),struct thread,sleepelem);
         if(front->wake_up_ticks <= ticks)
         {
             sema_up(&front->sleep_semaphore);

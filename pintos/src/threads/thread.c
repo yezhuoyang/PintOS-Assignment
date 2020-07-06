@@ -90,7 +90,7 @@ static tid_t allocate_tid (void);
    It is not safe to call thread_current() until this function
    finishes. */
 void
-thread_init (void) 
+thread_init(void)
 {
   ASSERT(intr_get_level () == INTR_OFF);
 
@@ -112,7 +112,7 @@ thread_init (void)
 /* Starts preemptive thread scheduling by enabling interrupts.
    Also creates the idle thread. */
 void
-thread_start (void) 
+thread_start(void)
 {
     /* Create the idle thread. */
     struct semaphore idle_started;
@@ -130,7 +130,7 @@ thread_start (void)
 /* Called by the timer interrupt handler at each timer tick.
    Thus, this function runs in an external interrupt context. */
 void
-thread_tick (void) 
+thread_tick(void)
 {
   struct thread *t = thread_current ();
   /* Update statistics. */
@@ -142,7 +142,6 @@ thread_tick (void)
 #endif
   else
     kernel_ticks++;
-
   /* Enforce preemption. */
   if(++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
@@ -222,7 +221,7 @@ thread_create(const char *name, int priority,
    is usually a better idea to use one of the synchronization
    primitives in synch.h. */
 void
-thread_block (void)
+thread_block(void)
 {
   ASSERT(!intr_context ());
   ASSERT(intr_get_level () == INTR_OFF);
@@ -241,7 +240,7 @@ thread_block (void)
    it may expect that it can atomically unblock a thread and
    update other data. */
 void
-thread_unblock (struct thread *t) 
+thread_unblock(struct thread *t)
 {
   enum intr_level old_level;
   ASSERT(is_thread (t));
@@ -249,8 +248,7 @@ thread_unblock (struct thread *t)
   ASSERT(t->status == THREAD_BLOCKED);
   list_insert_ordered(&ready_list,&t->elem,great_priority_threads,NULL);
   t->status = THREAD_READY;
-
-  intr_set_level (old_level);
+  intr_set_level(old_level);
 }
 
 /* Returns the name of the running thread. */
@@ -303,9 +301,7 @@ thread_exit (void)
       file_close(thread_current()->prog_file);
       thread_current()->prog_file=NULL;
   }
-
   struct list_elem *e;
-
   for(e=list_begin(&thread_current()->locks);
       e != list_end(&thread_current()->locks);
       e=list_next(e))
@@ -313,7 +309,6 @@ thread_exit (void)
     struct lock *lock=list_entry(e,struct lock,elem);
     lock_release(lock);
   }
-
   lock_acquire(&exit_lock);
   for(e=list_begin(&thread_current()->child_list);
       e!=list_end(&thread_current()->child_list);
@@ -379,7 +374,6 @@ void thread_foreach (thread_action_func *func, void *aux)
       struct thread *t = list_entry (e, struct thread, allelem);
       func (t, aux);
     }
-
 }
 
 
@@ -388,13 +382,10 @@ void
 thread_set_priority (int new_priority) 
 {
     enum intr_level old_intr=intr_disable();
-
     thread_current()->original_priority=new_priority;
     thread_update_priority(thread_current());
-
     if(!intr_context())
         thread_yield();
-
     intr_set_level(old_intr);
 }
 
@@ -422,7 +413,6 @@ thread_update_priority(struct thread *t)
     {
         t->priority=t->original_priority;
     }
-
 
     intr_set_level(old_level);
 }
@@ -482,7 +472,7 @@ thread_recalculate_load_avg_and_recent_cpu ()
 static void
 recalculate_recent_cpu (struct thread *t, void *aux UNUSED)
 {
-    int double_load_average = MUL_FI (load_average, 2);
+    int double_load_average = MUL_FI(load_average, 2);
     t->recent_cpu = MUL_FF (DIV_FF (double_load_average, ADD_FI (double_load_average, 1)), t->recent_cpu);
     t->recent_cpu = ADD_FI (t->recent_cpu, t->nice);
     thread_recalculate_priority (t);
@@ -555,6 +545,7 @@ idle (void *idle_started_ UNUSED)
       asm volatile ("sti; hlt" : : : "memory");
     }
 }
+
 /* Function used as the basis for a kernel thread. */
 static void
 kernel_thread(thread_func *function, void *aux)
